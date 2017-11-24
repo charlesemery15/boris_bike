@@ -12,7 +12,7 @@ describe DockingStation do
     bike = Bike.new
     subject.dock(bike)
     bike = subject.release_bike # setting up test ^
-    expect(bike).to be_working # test
+    expect(bike).to be_working # test working? (method) is returned true | to_not be_working return false
   end
       it "dock has accepted an argument" do
         expect(subject).to respond_to(:dock).with(1).argument
@@ -29,27 +29,42 @@ describe DockingStation do
   describe "#release_bike" do
 
     it "releases a bike" do
-      bike = Bike.new
-      subject.dock(bike)
-      expect(subject.release_bike).to eq bike  #has () as testing if eq
+      a_bike = Bike.new
+      subject.dock(a_bike)
+      expect(subject.release_bike).to eq a_bike  #has () as testing if eq
     end
 
     it "should raise error when no bike docked" do # {} as testing if behaviour occurs
       expect{ subject.release_bike }.to raise_error(RuntimeError, "No bikes available")
     end
 
+    it "can't release a broken bike" do
+      a_bike = Bike.new
+      a_bike.report_broken
+      subject.dock(a_bike)
+      expect{ subject.release_bike }.to raise_error("Cannot release a broken bike")
+    end
+
+
   end
 
   describe "#dock" do
+
+    it "dock a bike" do
+      a_bike = Bike.new
+      expect(subject.dock(a_bike)).to include a_bike
+    end
+
     it "should raise error when full of bikes" do
       subject.capacity.times { subject.dock(Bike.new) }
-
-    # station.dock(Bike.new).working?
-    # it "should be able to report broken bike" do
-    #   expect(subject.dock(Bike.new).working?).to
-    # end
-
       expect{ subject.dock(Bike.new) }.to raise_error(RuntimeError, "Dock full")
+    end
+
+    it "accepts a broken bike" do
+      a_bike = Bike.new
+      a_bike.report_broken
+      expect(subject.dock(a_bike)).to include a_bike
+
     end
   end
 end
